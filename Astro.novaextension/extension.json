@@ -1,0 +1,8 @@
+{
+    "identifier": "sciencefidelity.Astro",
+    "name": "Astro",
+    "organization": "Matt Cook",
+    "description": "Language definition for Astro.js.",
+    "version": "1.0",
+    "categories": ["languages"]
+}
