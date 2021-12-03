@@ -109,6 +109,20 @@
     </scopes>
 
     <collections>
+        <!-- frontmatter -->
+        <collection name="frontmatter">
+            <scope name="astro.frontmatter">
+                <starts-with>
+                    <expression>---</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>---</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="javascript"/>
+                </subscopes>
+            </scope>
+        </collection>
         <!-- Tags -->
         <collection name="tags">
             <scope name="astro.tag.close">
