@@ -92,9 +92,11 @@
 
         <!-- Tags -->
         <include syntax="self" collection="tags" />
+        <!-- Frontmatter -->
+        <include syntax="self" collection="frontmatter" />
 
         <!-- Values -->
-        <scope name="html.value.entity.numeric">
+        <scope name="astro.value.entity.numeric">
             <expression>&amp;\#[0-9]+;</expression>
         </scope>
         <scope name="astro.value.entity.named">
@@ -112,19 +114,67 @@
         <!-- frontmatter -->
         <collection name="frontmatter">
             <scope name="astro.frontmatter">
+                <symbol type="frontmatter">
+                    <context />
+                </symbol>
                 <starts-with>
                     <expression>---</expression>
+                    <capture number="0" name="astro.comment.frontmatter" />
                 </starts-with>
                 <ends-with>
                     <expression>---</expression>
+                    <capture number="0" name="astro.comment.frontmatter" />
                 </ends-with>
                 <subscopes>
-                    <include syntax="javascript"/>
+                    <include syntax="typescript"/>
                 </subscopes>
             </scope>
         </collection>
         <!-- Tags -->
         <collection name="tags">
+            <!-- !Style -->
+            <scope name="html.embedded.style" spell-check="false" lookup="documentation">
+                <starts-with>
+                    <expression>(?=&lt;(?i:style)\b)</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>(?=&lt;/(?i:style)\b)</expression>
+                </ends-with>
+                <subscopes anchored="true" skip-whitespace="false">
+                    <scope name="html.tag.style.open">
+                        <symbol type="tag-style">
+                            <context behavior="start" group-by-name="true">
+                                <auto-close string="&lt;/" completion="${name}&gt;" />
+                            </context>
+                        </symbol>
+                        <starts-with>
+                            <expression>&lt;((?i:style))</expression>
+                            <capture number="1" name="html.tag.name" />
+                        </starts-with>
+                        <ends-with>
+                            <expression>/?&gt;</expression>
+                        </ends-with>
+                        <subscopes>
+                            <include syntax="self" collection="attributes" />
+                        </subscopes>
+                    </scope>
+                    <scope name="html.embedded.style.content" optional="true">
+                        <starts-with>
+                            <expression>(?&lt;=&gt;)</expression>
+                        </starts-with>
+                        <ends-with>
+                            <expression>(?=&lt;/(?i:style)\b)</expression>
+                        </ends-with>
+                        <subsyntax name="css">
+                            <cut-off>
+                                <expression>(?=&lt;/(?i:style|head|body|div)\b)</expression>
+                            </cut-off>
+                        </subsyntax>
+                    </scope>
+                </subscopes>
+            </scope>
+
+            <!-- !Closing Tags -->
             <scope name="astro.tag.close">
                 <symbol type="tag">
                     <context behavior="end" group-by-name="true" />
@@ -148,6 +198,8 @@
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="astro.tag.attributes" />
+                    <include syntax="javascript" />
+                    <include syntax="self" collection="styles" />
                 </subscopes>
             </scope>
         </collection>
