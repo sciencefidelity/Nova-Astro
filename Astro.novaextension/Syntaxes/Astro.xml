@@ -173,6 +173,47 @@
                     </scope>
                 </subscopes>
             </scope>
+            <!-- !Script -->
+            <scope name="html.embedded.script" spell-check="false" lookup="documentation">
+                <starts-with>
+                    <expression>(?=&lt;(?i:script)\b)</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>(?=&lt;/(?i:script)\b)</expression>
+                </ends-with>
+                <subscopes anchored="true" skip-whitespace="false">
+                    <scope name="html.tag.script.open">
+                        <symbol type="tag-script">
+                            <context behavior="start" group-by-name="true">
+                                <auto-close string="&lt;/" completion="${name}&gt;" />
+                            </context>
+                        </symbol>
+                        <starts-with>
+                            <expression>&lt;((?i:script))</expression>
+                            <capture number="1" name="html.tag.name" />
+                        </starts-with>
+                        <ends-with>
+                            <expression>/?&gt;</expression>
+                        </ends-with>
+                        <subscopes>
+                            <include syntax="self" collection="attributes" />
+                        </subscopes>
+                    </scope>
+                    <scope name="html.embedded.script.content" optional="true">
+                        <starts-with>
+                            <expression>(?&lt;=&gt;)</expression>
+                        </starts-with>
+                        <ends-with>
+                            <expression>(?=&lt;/(?i:script)\b)</expression>
+                        </ends-with>
+                        <subsyntax name="javascript">
+                            <cut-off>
+                                <expression>(?=&lt;/(?i:script|head|body|div)\b)</expression>
+                            </cut-off>
+                        </subsyntax>
+                    </scope>
+                </subscopes>
+            </scope>
 
             <!-- !Closing Tags -->
             <scope name="astro.tag.close">
