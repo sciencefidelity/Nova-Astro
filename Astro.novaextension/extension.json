@@ -1,21 +1,37 @@
 {
-    "identifier": "sciencefidelity.Astro",
-    "name": "Astro",
-    "organization": "Matt Cook",
-    "description": "Language definition for Astro.js.",
-    "version": "0.1.0",
-    "categories": ["languages"],
-    "license": "MIT",
-    "repository": "https://github.com/sciencefidelity/Nova-Astro",
-    "bugs": "https://github.com/sciencefidelity/Nova-Astro/issues",
-    "homepage": "https://mattcook.dev",
-    "keywords": ["astro", "vue", "react", "preact", "svelte"],
-    "activationEvents": [
-        "onLanguage:astro",
-        "onWorkspaceContains:astro.config.mjs"
-    ],
-    "entitlements": {
-        "process": true,
-        "filesystem": "readonly"
-    },
+  "identifier": "sciencefidelity.astro",
+  "name": "Astro",
+  "organization": "Matt Cook",
+  "description": "Language support for Astro.js.",
+  "version": "0.1.0",
+  "categories": [
+    "completions",
+    "formatters",
+    "issues",
+    "languages"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/sciencefidelity/Nova-Astro",
+  "bugs": "https://github.com/sciencefidelity/Nova-Astro/issues",
+  "homepage": "https://mattcook.dev",
+  "keywords": [
+    "astro",
+    "vue",
+    "react",
+    "preact",
+    "svelte",
+    "lit",
+    "solid",
+    "alpine"
+  ],
+  "main": "main.dist.js",
+  "activationEvents": [
+    "onLanguage:astro",
+    "onWorkspaceContains:astro.config.mjs",
+    "onWorkspaceContains:astro.config.js"
+  ],
+  "entitlements": {
+    "process": true,
+    "filesystem": "readonly"
+  }
 }
