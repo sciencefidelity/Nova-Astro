@@ -32,7 +32,7 @@
   ],
   "entitlements": {
     "process": true,
-    "filesystem": "readonly"
+    "filesystem": "readwrite"
   },
 
 
