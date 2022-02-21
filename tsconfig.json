@@ -4,26 +4,9 @@
     "sourceMap": true,
     "noEmit": true,
     "strict": true,
-    "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "removeComments": true,
-    "baseUrl": "./src",
-    "typeRoots": ["node_modules/@types", "types"],
-    "types": ["bluebird", "jest", "node", "nova-editor-node"],
-    "paths": {
-      "@/*": ["./*"]
-    }
-  },
-  "include": ["src/*", "src/**/*"],
-  "exclude": [
-    "node_modules",
-    "./node_modules",
-    "./node_modules/*",
-    "./node_modules/@types/node/index.d.ts"
-  ]
+    "forceConsistentCasingInFileNames": true
+  }
 }
