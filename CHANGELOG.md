@@ -1,1 +1,1 @@
-./Astro.novaextension/CHANGELOG.md
+./astro.novaextension/CHANGELOG.md
