@@ -1,7 +1,7 @@
 {
   "name": "nova-astro",
   "version": "0.1.0",
-  "description": "Astro language support for Nova",
+  "description": "Astro.js language support for Nova",
   "author": "Matt Cook",
   "license": "MIT",
   "main": "",
