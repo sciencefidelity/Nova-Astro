@@ -33,5 +33,23 @@
   "entitlements": {
     "process": true,
     "filesystem": "readonly"
+  },
+
+
+  "commands": {
+    "extensions": [
+      {
+        "title": "Preferences",
+        "command": "sciencefidelity.astro.openWorkspaceConfig"
+      },
+      {
+        "title": "Restart Server",
+        "command": "sciencefidelity.astro.reload"
+      },
+      {
+        "title": "Force Unlock Dependency Installation",
+        "command": "sciencefidelity.astro.forceClearLock"
+      }
+    ]
   }
 }
