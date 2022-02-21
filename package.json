@@ -24,7 +24,8 @@
     "fix": "concurrently 'yarn:fix:*'",
     "fix:js": "eslint --fix \"**/*.{ts,js}\"",
     "fix:format": "prettier --write '**/*.{ts,js,json,md,yml}'",
-    "test": "jest"
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.0.1",
