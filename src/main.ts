@@ -75,7 +75,7 @@ async function asyncActivate() {
     console.log("logging to", logDir)
     // passing inLog breaks some requests for an unknown reason
     // const inLog = nova.path.join(logDir, "languageServer-in.log");
-    const outLog = nova.path.join(logDir, "languageServer-out.log")
+    const outLog = nova.path.join(logDir, "lsp.log")
     serviceArgs = {
       path: "/usr/bin/env",
       // args: ["bash", "-c", `tee "${inLog}" | "${runFile}" | tee "${outLog}"`],
@@ -106,57 +106,55 @@ async function asyncActivate() {
   )
 
   // I think there's a in onDidStop's disposable, which is why this logic is necessary
-  let disposed = false
+  // let disposed = false
 
-  compositeDisposable.add(
-    client?.onDidStop((err) => {
-      if (disposed && !err) {
-        return
-      }
-      console.log("Stopped")
+  // compositeDisposable.add(
+  //   client?.onDidStop(err => {
+  //     if (disposed && !err) {
+  //       return
+  //     }
+  //     console.log("Stopped")
 
-      let message = "Astro Language Server stopped unexpectedly"
-      if (err) {
-        message += `:\n\n${err.toString()}`
-      } else {
-        message += "."
-      }
-      message +=
-        "\n\nPlease report this, along with any output in the Extension Console."
-      nova.workspace.showActionPanel(
-        message,
-        {
-          buttons: ["Restart", "Ignore"],
-        },
-        index => {
-          if (index == 0) {
-            nova.commands.invoke("sciencefidelity.astro.reload")
-          }
-        }
-      )
-    })
-  )
+  //     let message = "Astro Language Server stopped unexpectedly"
+  //     if (err) {
+  //       message += `:\n\n${err.toString()}`
+  //     } else {
+  //       message += "."
+  //     }
+  //     message +=
+  //       "\n\nPlease report this, along with any output in the Extension Console."
+  //     nova.workspace.showActionPanel(
+  //       message,
+  //       {
+  //         buttons: ["Restart", "Ignore"],
+  //       },
+  //       index => {
+  //         if (index == 0) {
+  //           nova.commands.invoke("sciencefidelity.astro.reload")
+  //         }
+  //       }
+  //     )
+  //   })
+  // )
 
-  compositeDisposable.add({
-    dispose() {
-      disposed = true
-    },
-  })
+  // compositeDisposable.add({
+  //   dispose() {
+  //     disposed = true
+  //   },
+  // })
 
   client.start()
-
-
 }
 
 export function activate() {
   console.log("activating...")
-  if (nova.inDevMode()) {
-    const notification = new NotificationRequest("activated")
-    notification.body = "TypeScript extension is loading"
-    nova.notifications.add(notification)
-  }
+  // if (nova.inDevMode()) {
+  //   const notification = new NotificationRequest("activated")
+  //   notification.body = "Astro extension is loading"
+  //   nova.notifications.add(notification)
+  // }
   return asyncActivate()
-    .catch((err) => {
+    .catch(err => {
       console.error("Failed to activate")
       console.error(err)
       nova.workspace.showErrorMessage(err)
