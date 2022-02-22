@@ -14,7 +14,7 @@
   },
   "homepage": "https://github.com/sciencefidelity/Nova-Astro",
   "scripts": {
-    "build": "yarn clean && rollup -c rollup.config.main.js && rm -rf astro.novaextension/node_modules",
+    "build": "rollup -c rollup.config.main.js && rm -rf astro.novaextension/node_modules",
     "watch": "onchange -i 'src/**' 'rollup.*.js' -- npm run build",
     "clean": "rm astro.novaextension/Scripts/*",
     "lint": "concurrently 'yarn:lint:*'",

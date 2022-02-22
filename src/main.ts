@@ -9,6 +9,23 @@ dependencyManagement.registerDependencyUnlockCommand(
 let client: LanguageClient | null = null
 let compositeDisposable = new CompositeDisposable()
 
+async function makeFileExecutable(file: string) {
+  return new Promise<void>((resolve, reject) => {
+    const process = new Process("/usr/bin/env", {
+      args: ["chmod", "u+x", file],
+    })
+    process.onDidExit((status) => {
+      if (status === 0) {
+        resolve()
+      } else {
+        reject(status)
+      }
+    })
+    process.start()
+  })
+}
+
+
 async function reload() {
   deactivate()
   console.log("reloading...")
@@ -38,26 +55,34 @@ async function asyncActivate() {
     throw err
   }
 
-  const path = `
-    ${dependencyManagement.getDependencyDirectory()}
-    /node_modules/.bin/astro-ls
-  `
+  const runFile = nova.path.join(nova.extension.path, "run.sh")
+  await makeFileExecutable(runFile)
+
+  const serviceArgs = {
+    path: runFile,
+  }
+  const syntaxes = ["astro"]
+  const env = {
+    WORKSPACE_DIR: nova.workspace.path ?? "",
+    INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
+  }
+
   client = new LanguageClient(
     "sciencefidelity.astro",
     "Astro Language Server",
     {
-      args: ["node", "--stdio"],
-      path,
-      type: "stdio"
+      type: "stdio",
+      ...serviceArgs,
+      env
     },
     {
-      syntaxes: ["astro"]
+      syntaxes
     }
   )
   client.start()
 }
 
-export async function activate() {
+export function activate() {
   console.log("activating...")
   return asyncActivate()
     .catch(err => {
