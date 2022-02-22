@@ -4,6 +4,7 @@
         <name>Astro</name>
         <type>markup</type>
         <preferred-file-extension>astro</preferred-file-extension>
+        <parent>typescript</parent>
     </meta>
 
     <detectors>
@@ -12,10 +13,14 @@
 
     <indentation>
         <increase>
-            <expression>^\s*&lt;(([^!/?]|%)(?!.+?([/%]&gt;|&lt;/.+?&gt;))|[%!]--\s*$)</expression>
+            <expression>(?x)
+                (\{[^}\"']*$)|(\[[^\]\"']*$)|(\([^)\"']*$)
+                |(&lt;(?!\?|(?:area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b)([-_\.A-Za-z0-9]+)(?=\s|&gt;)\b[^&gt;]*&gt;[^&lt;]*$)
+                |(&lt;!--\s*$)
+            </expression>
         </increase>
         <decrease>
-            <expression>^\s*(&lt;/[^&gt;]+&gt;|--&gt;|--%&gt;)</expression>
+            <expression>^\s*(\s*/\*.*\*/\s*)*[\}\]\)\\]</expression>
         </decrease>
     </indentation>
 
@@ -31,83 +36,68 @@
     </comments>
 
     <brackets>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
         <pair open="&lt;" close="&gt;" />
     </brackets>
 
     <surrounding-pairs>
-        <pair open="&lt;" close="&gt;" />
         <pair open="{" close="}" />
         <pair open="[" close="]" />
         <pair open="(" close=")" />
         <pair open="&apos;" close="&apos;" />
         <pair open="&quot;" close="&quot;" />
         <pair open="`" close="`" />
+        <pair open="“" close="”" />
+        <pair open="‘" close="’" />
     </surrounding-pairs>
 
+    <completions>
+        <!-- "foo" -->
+        <provider>
+            <selector>*:not(string,comment), *:not(string,comment)</selector>
+            <expression>(?&lt;!\.)\b[a-zA-Z_][a-zA-Z0-9_]*</expression>
+
+            <symbols type="function" syntax="javascript">
+                <behavior>
+                    <arguments prefix="(" suffix=")" separator=", " />
+                </behavior>
+            </symbols>
+            <symbols type="function" syntax="typescript">
+                <behavior>
+                    <arguments prefix="(" suffix=")" separator=", " />
+                </behavior>
+            </symbols>
+            <symbols type="class" syntax="javascript" />
+            <symbols type="class" syntax="typescript" />
+            <symbols type="variable,constant,argument" syntax="javascript" />
+            <symbols type="variable,constant,argument" syntax="typescript" />
+        </provider>
+
+        <!-- ".foo" -->
+        <provider>
+            <selector>*:not(string,comment), *:not(string,comment)</selector>
+            <expression>(?&lt;=\.)\b[a-zA-Z_][a-zA-Z0-9_]*</expression>
+
+            <symbols type="function" syntax="javascript">
+                <behavior>
+                    <arguments prefix="(" suffix=")" separator=", " />
+                </behavior>
+            </symbols>
+            <symbols type="function" syntax="typescript">
+                <behavior>
+                    <arguments prefix="(" suffix=")" separator=", " />
+                </behavior>
+            </symbols>
+            <symbols type="property" syntax="javascript" />
+            <symbols type="property" syntax="typescript" />
+        </provider>
+    </completions>
+
     <scopes>
-        <!-- Meta -->
-        <scope name="astro.meta.processing">
-            <starts-with>
-                <expression>&lt;\?astro</expression>
-            </starts-with>
-            <ends-with>
-                <expression>\?&gt;</expression>
-            </ends-with>
-        </scope>
-        <scope name="astro.meta.declaration">
-            <starts-with>
-                <expression>&lt;!(?i:DOCTYPE)</expression>
-            </starts-with>
-            <ends-with>
-                <expression>&gt;</expression>
-            </ends-with>
-        </scope>
-        <scope name="astro.meta.cdata">
-            <starts-with>
-                <expression>&lt;!\[(?i:CDATA)\[</expression>
-            </starts-with>
-            <ends-with>
-                <expression>\]\]&gt;</expression>
-            </ends-with>
-            <subscopes />
-        </scope>
-
-        <!-- Comments -->
-        <scope name="astro.comment.block" spell-check="true">
-            <starts-with>
-                <expression>&lt;!--</expression>
-            </starts-with>
-            <ends-with>
-                <expression>--&gt;</expression>
-            </ends-with>
-        </scope>
-        <scope name="astro.comment.line" spell-check="true">
-          <starts-with>
-            <expression>//</expression>
-          </starts-with>
-          <ends-with>
-            <expression>$</expression>
-          </ends-with>
-        </scope>
-
-        <!-- Tags -->
-        <include syntax="self" collection="tags" />
-        <!-- Frontmatter -->
         <include syntax="self" collection="frontmatter" />
-
-        <!-- Values -->
-        <scope name="astro.value.entity.numeric">
-            <expression>&amp;\#[0-9]+;</expression>
-        </scope>
-        <scope name="astro.value.entity.named">
-            <strings prefix="&amp;" suffix=";" word-boundary="false">
-                <string>amp</string>
-                <string>lt</string>
-                <string>gt</string>
-                <string>apos</string>
-                <string>quot</string>
-            </strings>
-        </scope>
+        <include syntax="typescript" collection="*" />
     </scopes>
 
     <collections>
@@ -130,10 +120,52 @@
                 </subscopes>
             </scope>
         </collection>
+
+        <!-- Comments -->
+        <collection name="comments">
+            <scope name="astro.comment.line" spell-check="true">
+                <starts-with>
+                    <expression>//</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>$</expression>
+                </ends-with>
+            </scope>
+            <scope name="astro.comment.block">
+                <starts-with>
+                    <expression>&lt;!--</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>--&gt;</expression>
+                </ends-with>
+            </scope>
+        </collection>
+
+        <!-- Syntax -->
+        <collection name="syntax" override="true">
+            <include syntax="self" collection="tags" />
+            <include syntax="typescript" collection="syntax" />
+        </collection>
+
         <!-- Tags -->
         <collection name="tags">
+            <scope name="astro.tag-block">
+                <!-- Tag Blocks (<> … </>) -->
+                <starts-with>
+                    <expression>(?&lt;![a-zA-Z0-9_])&lt;&gt;</expression>
+                    <capture number="0" name="astro.tag.framework.open" />
+                </starts-with>
+                <ends-with>
+                    <expression>(?&lt;![a-zA-Z0-9_])&lt;/&gt;</expression>
+                    <capture number="0" name="astro.tag.framework.close" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="tags" />
+                </subscopes>
+            </scope>
+
             <!-- !Style -->
-            <scope name="html.embedded.style" spell-check="false" lookup="documentation">
+            <scope name="astro.embedded.style" spell-check="false" lookup="documentation">
                 <starts-with>
                     <expression>(?=&lt;(?i:style)\b)</expression>
                 </starts-with>
@@ -141,7 +173,7 @@
                     <expression>(?=&lt;/(?i:style)\b)</expression>
                 </ends-with>
                 <subscopes anchored="true" skip-whitespace="false">
-                    <scope name="html.tag.style.open">
+                    <scope name="astro.tag.style.open">
                         <symbol type="tag-style">
                             <context behavior="start" group-by-name="true">
                                 <auto-close string="&lt;/" completion="${name}&gt;" />
@@ -158,7 +190,7 @@
                             <include syntax="self" collection="attributes" />
                         </subscopes>
                     </scope>
-                    <scope name="html.embedded.style.content.css" optional="true">
+                    <scope name="astro.embedded.style.content.css" optional="true">
                         <starts-with>
                             <expression>(?&lt;=&gt;)</expression>
                         </starts-with>
@@ -171,7 +203,7 @@
                             </cut-off>
                         </subsyntax>
                     </scope>
-                    <scope name="html.embedded.style.content.scss" optional="true">
+                    <scope name="astro.embedded.style.content.css" optional="true">
                         <starts-with>
                             <expression>(?&lt;=&gt;)</expression>
                         </starts-with>
@@ -186,8 +218,9 @@
                     </scope>
                 </subscopes>
             </scope>
+
             <!-- !Script -->
-            <scope name="html.embedded.script" spell-check="false" lookup="documentation">
+            <scope name="astro.embedded.script" spell-check="false" lookup="documentation">
                 <starts-with>
                     <expression>(?=&lt;(?i:script)\b)</expression>
                 </starts-with>
@@ -195,7 +228,7 @@
                     <expression>(?=&lt;/(?i:script)\b)</expression>
                 </ends-with>
                 <subscopes anchored="true" skip-whitespace="false">
-                    <scope name="html.tag.script.open">
+                    <scope name="astro.tag.script.open">
                         <symbol type="tag-script">
                             <context behavior="start" group-by-name="true">
                                 <auto-close string="&lt;/" completion="${name}&gt;" />
@@ -212,7 +245,7 @@
                             <include syntax="self" collection="attributes" />
                         </subscopes>
                     </scope>
-                    <scope name="html.embedded.script.content" optional="true">
+                    <scope name="astro.embedded.script.content" optional="true">
                         <starts-with>
                             <expression>(?&lt;=&gt;)</expression>
                         </starts-with>
@@ -227,92 +260,258 @@
                     </scope>
                 </subscopes>
             </scope>
-            <!-- !Script -->
-            <scope name="html.embedded.script" spell-check="false" lookup="documentation">
-                <starts-with>
-                    <expression>(?=&lt;(?i:Markdown)\b)</expression>
-                </starts-with>
-                <ends-with>
-                    <expression>(?=&lt;/(?i:Markdown)\b)</expression>
-                </ends-with>
-                <subscopes anchored="true" skip-whitespace="false">
-                    <scope name="html.tag.script.open">
-                        <symbol type="tag-script">
-                            <context behavior="start" group-by-name="true">
-                                <auto-close string="&lt;/" completion="${name}&gt;" />
-                            </context>
-                        </symbol>
-                        <starts-with>
-                            <expression>&lt;((?i:Markdown))</expression>
-                            <capture number="1" name="html.tag.name" />
-                        </starts-with>
-                        <ends-with>
-                            <expression>/?&gt;</expression>
-                        </ends-with>
-                        <subscopes>
-                            <include syntax="self" collection="attributes" />
-                        </subscopes>
-                    </scope>
-                    <scope name="html.embedded.script.content" optional="true">
-                        <starts-with>
-                            <expression>(?&lt;=&gt;)</expression>
-                        </starts-with>
-                        <ends-with>
-                            <expression>(?=&lt;/(?i:Markdown)&gt;\b)</expression>
-                        </ends-with>
-                        <subsyntax name="markdown">
-                            <cut-off>
-                                <expression>(?=&lt;/(?i:script|head|body|div)\b)</expression>
-                            </cut-off>
-                        </subsyntax>
-                    </scope>
-                </subscopes>
-            </scope>
 
-            <!-- !Closing Tags -->
-            <scope name="astro.tag.close">
+            <scope name="astro.tag.open.void">
+                <!-- Void elements (self-closing tags) -->
                 <symbol type="tag">
-                    <context behavior="end" group-by-name="true" />
-                </symbol>
-                <expression>&lt;/([a-zA-Z_][a-zA-Z0-9_-]*)&gt;</expression>
-                <capture number="1" name="astro.tag.name" />
-            </scope>
-            <scope name="astro.tag.open">
-                <symbol type="tag">
-                    <!-- Do not match self-closing tags for symbolication -->
-                    <filter match-end="(?&lt;!/&gt;)" />
-                    <context behavior="start" group-by-name="true" />
-                    <auto-close string="&lt;/" completion="${name}&gt;" />
+                    <context behavior="subtree" group-by-name="true" unclosed="truncate" />
                 </symbol>
                 <starts-with>
-                    <expression>&lt;([a-zA-Z_][a-zA-Z0-9_-]*)</expression>
-                    <capture number="1" name="astro.tag.name" />
+                    <strings prefix="(?&lt;![a-zA-Z0-9_])&lt;" suffix="\b" word-boundary="false">
+                        <string>area</string>
+                        <string>base</string>
+                        <string>br</string>
+                        <string>col</string>
+                        <string>command</string>
+                        <string>embed</string>
+                        <string>hr</string>
+                        <string>input</string>
+                        <string>img</string>
+                        <string>keygen</string>
+                        <string>link</string>
+                        <string>meta</string>
+                        <string>param</string>
+                        <string>source</string>
+                        <string>track</string>
+                        <string>wbr</string>
+                    </strings>
+                    <capture number="1" name="tsx.tag.name" />
                 </starts-with>
                 <ends-with>
                     <expression>/?&gt;</expression>
                 </ends-with>
                 <subscopes>
-                    <include syntax="self" collection="astro.tag.attributes" />
-                    <include syntax="javascript" />
-                    <include syntax="self" collection="styles" />
+                    <include syntax="self" collection="attributes" />
+                </subscopes>
+            </scope>
+
+            <scope name="astro.tag-definition.framework.component">
+                <!-- <Component>...</Component> -->
+                <symbol type="tag">
+                    <display-name>
+                        <component variable="name" />
+                        <component selector="tag.attribute.value.id" prepend="#" />
+                        <component selector="tag.attribute.value.class" prepend="." replace="\s+" replace-with="." />
+                    </display-name>
+                    <context behavior="subtree">
+                        <auto-close string="&lt;/" completion="${name}&gt;" />
+                    </context>
+                </symbol>
+                <starts-with>
+                    <expression>(?&lt;![a-zA-Z0-9_])(&lt;)\s*((?:(?:[a-zA-Z_][a-zA-Z0-9_-]*)(?:\.[a-zA-Z_][a-zA-Z0-9-_]*))|(?:[A-Z][a-zA-Z0-9_-]*))</expression>
+                    <capture number="1" name="tsx.tag.open.framework" />
+                    <capture number="2" name="tsx.tag.open.name.framework" />
+                </starts-with>
+                <ends-with>
+                    <template>&lt;/\s*($2)\s*&gt;|/&gt;</template>
+                    <capture number="0" name="tsx.tag.close.framework" />
+                    <capture number="1" name="tsx.tag.close.framework.name" />
+                </ends-with>
+                <subscopes anchored="true">
+
+                    <include syntax="self" collection="framework-attributes" optional="true" repeat="true" />
+
+                    <cut-off>
+                        <expression>/&gt;</expression>
+                        <capture number="0" name="tsx.tag.close.framework" />
+
+                    </cut-off>
+
+                    <scope name="tsx.tag.open.framework">
+                        <expression>&gt;</expression>
+                    </scope>
+
+                    <include syntax="self" collection="tag-content" optional="true" repeat="true" />
+
+                </subscopes>
+            </scope>
+
+            <scope name="astro.tag-definition.dom">
+                <!-- <domelement> -->
+                <symbol type="tag">
+                    <display-name>
+                        <component variable="name" />
+                        <component selector="tag.attribute.value.id" prepend="#" />
+                        <component selector="tag.attribute.value.class" prepend="." replace="\s+" replace-with="." />
+                    </display-name>
+                    <context behavior="subtree">
+                        <auto-close string="&lt;/" completion="${name}&gt;" />
+                    </context>
+                </symbol>
+                <starts-with>
+                    <expression>(?&lt;![a-zA-Z0-9_])(&lt;)([a-zA-Z_][a-zA-Z0-9_:.-]*)</expression>
+                    <capture number="1" name="tsx.tag.open" />
+                    <capture number="2" name="tsx.tag.open.name" />
+                </starts-with>
+                <ends-with>
+                    <template>&lt;/\s*($2)\s*&gt;|/&gt;</template>
+                    <capture number="0" name="tsx.tag.close" />
+                    <capture number="1" name="tsx.tag.close.name" />
+                </ends-with>
+                <subscopes anchored="true">
+                    <include syntax="self" collection="attributes" optional="true" repeat="true" />
+
+                    <cut-off>
+                        <expression>/&gt;</expression>
+                        <capture number="0" name="tsx.tag.close.framework" />
+                    </cut-off>
+
+                    <scope name="astro.tag.open">
+                        <expression>&gt;</expression>
+                    </scope>
+
+                    <include syntax="self" collection="tag-content" optional="true" repeat="true" />
                 </subscopes>
             </scope>
         </collection>
 
         <!-- Tag Attributes -->
-        <collection name="astro.tag.attributes">
-            <scope name="astro.tag.attribute">
-                <expression>(?:([a-zA-Z_][a-zA-Z0-9-_]*)(\:))?([a-zA-Z_][a-zA-Z0-9-_]*)\s*(=?)\s*(?:(?:(&apos;)(\\&apos;|[^&apos;]*)(&apos;)?)|(?:(&quot;)(\\&quot;|[^&quot;]*)(&quot;)?))?</expression>
-                <capture number="1" name="astro.tag.attribute.name.namespace" />
-                <capture number="2" name="astro.tag.attribute.name.separator" />
-                <capture number="3" name="astro.tag.attribute.name.local" />
-                <capture number="4" name="astro.tag.attribute.equals-sign" />
-                <capture number="5" name="astro.tag.attribute.quote.left" />
-                <capture number="6" name="astro.tag.attribute.value" />
-                <capture number="7" name="astro.tag.attribute.quote.right" />
-                <capture number="8" name="astro.tag.attribute.quote.left" />
-                <capture number="9" name="astro.tag.attribute.value" />
-                <capture number="10" name="astro.tag.attribute.quote.right" />
+        <collection name="attributes">
+            <include syntax="self" collection="comments" />
+
+            <include syntax="self" collection="variables" />
+
+            <scope name="astro.tag-attribute-definition">
+                <starts-with>
+                    <expression>\b([a-zA-Z_][a-zA-Z0-9-_]*)\b</expression>
+                    <capture number="1" name="tsx.tag.attribute.name" />
+                </starts-with>
+                <ends-with />
+                <subscopes anchored="true">
+                    <scope name="tsx.tag.attribute.operator">
+                        <expression>=</expression>
+                    </scope>
+                    <include syntax="self" collection="attribute-values" />
+                </subscopes>
+            </scope>
+
+            <include syntax="self" collection="attribute-values" />
+        </collection>
+
+        <!-- Framework Tag Attributes -->
+        <collection name="framework-attributes">
+            <include syntax="self" collection="comments" />
+
+            <include syntax="self" collection="variables" />
+
+            <scope name="astro.framework.tag-attribute-definition">
+                <starts-with>
+                    <expression>\b([a-zA-Z_][a-zA-Z0-9-_]*)\b</expression>
+                    <capture number="1" name="jsx.framework.tag.attribute.name" />
+                </starts-with>
+                <ends-with />
+                <subscopes anchored="true">
+                    <scope name="jsx.tag.framework.attribute.operator">
+                        <expression>=</expression>
+                    </scope>
+                    <include syntax="self" collection="attribute-values" />
+                </subscopes>
+            </scope>
+
+            <include syntax="self" collection="attribute-values" />
+        </collection>
+
+        <!-- Tag Content -->
+        <collection name="tag-content">
+            <include syntax="self" collection="comments" />
+
+            <include syntax="self" collection="variables" />
+
+            <include syntax="self" collection="tags" />
+
+            <include syntax="markdown" />
+
+            <scope name="astro.tag-content.bare-words">
+                <expression>(?:[^&lt;{\s]+)</expression>
+            </scope>
+
+            <scope name="astro.tag.close.framework">
+                <!-- </Component> -->
+                <expression>&lt;/\s*((?:(?:[a-zA-Z_][a-zA-Z0-9_-]*)(?:\.[a-zA-Z_][a-zA-Z0-9-_]*))|(?:[A-Z][a-zA-Z0-9_-]*))\s*&gt;</expression>
+                <capture number="1" name="tsx.tag.name.framework" />
+            </scope>
+
+            <scope name="astro.tag.close">
+                <!-- </domelement> -->
+                <expression>&lt;/\s*([a-zA-Z_][a-zA-Z0-9_:-]*)\s*&gt;</expression>
+                <capture number="1" name="tsx.tag.name" />
+            </scope>
+        </collection>
+
+        <!-- Variables -->
+        <collection name="variables">
+            <scope name="astro.value.variable">
+                <symbol type="block">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>\{</expression>
+                    <capture number="0" name="tsx.value.variable.bracket" />
+                </starts-with>
+                <ends-with>
+                    <expression>\}</expression>
+                    <capture number="0" name="tsx.value.variable.bracket" />
+                </ends-with>
+                <subscopes>
+                    <cut-off>
+                        <!-- Cut off if a JavaScript expression keyword is encountered -->
+                        <expression>(?=\b(?:var|function|class|if|else|for|while)\b)</expression>
+                    </cut-off>
+                    <include syntax="typescript" collection="keywords" />
+                    <include syntax="typescript" collection="blocks" />
+                    <include syntax="typescript" collection="values" />
+                    <include syntax="typescript" collection="identifiers" />
+                    <include syntax="self" collection="syntax" />
+                </subscopes>
+            </scope>
+        </collection>
+
+        <!-- Attribute values -->
+        <collection name="attribute-values">
+            <scope name="astro.tag.attribute.value.double-quoted">
+                <starts-with>
+                    <expression>&quot;</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>&quot;</expression>
+                </ends-with>
+                <subscopes>
+                    <scope name="tsx.tag.attribute.value.escape">
+                        <expression>\\\\|\\\\{|\\&quot;</expression>
+                    </scope>
+                    <include syntax="self" collection="variables" />
+                </subscopes>
+            </scope>
+
+            <scope name="astro.tag.attribute.value.single-quoted">
+                <starts-with>
+                    <expression>&apos;</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>&apos;</expression>
+                </ends-with>
+                <subscopes>
+                    <scope name="astro.tag.attribute.value.escape">
+                        <expression>\\\\|\\\\{|\\&apos;</expression>
+                    </scope>
+                    <include syntax="self" collection="variables" />
+                </subscopes>
+            </scope>
+
+            <include syntax="self" collection="variables" />
+
+            <scope name="astro.tag.attribute.value.bare">
+                <expression>\b[a-zA-Z0-9-_]+\b</expression>
             </scope>
         </collection>
     </collections>
