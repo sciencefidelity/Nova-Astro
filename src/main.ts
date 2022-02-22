@@ -6,6 +6,11 @@ dependencyManagement.registerDependencyUnlockCommand(
   "sciencefidelity.astro.forceClearLock"
 )
 
+// watch the preferences for enable analysis server
+nova.config.onDidChange("sciencefidelity.astro.config.enableLsp", async () => {
+  client ? activate() : deactivate()
+})
+
 let client: LanguageClient | null = null
 let compositeDisposable = new CompositeDisposable()
 
@@ -79,23 +84,27 @@ async function asyncActivate() {
       syntaxes
     }
   )
-  client.start()
+  client?.start()
 }
 
-export function activate() {
-  console.log("activating...")
-  return asyncActivate()
-    .catch(err => {
-      console.error("Failed to activate")
-      console.error(err)
-      nova.workspace.showErrorMessage(err)
-    })
-    .then(() => {
-      console.log("activated")
-    })
+export function activate(): void | Promise<void> {
+  if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
+    console.log("activating...")
+    return asyncActivate()
+      .catch(err => {
+        console.error("Failed to activate")
+        console.error(err)
+      })
+      .then(() => {
+        console.log("activated")
+      })
+  } else {
+    console.log("LSP disabled...")
+    return deactivate()
+  }
 }
 
-export function deactivate() {
+export function deactivate(): void | Promise<void> {
   console.log("deactivate")
   compositeDisposable.dispose()
   compositeDisposable = new CompositeDisposable()

@@ -35,6 +35,28 @@
     "filesystem": "readwrite"
   },
 
+  "config": [
+    {
+      "key": "sciencefidelity.astro.config.enableLsp",
+      "title": "Enable Language Server",
+      "type": "boolean",
+      "default": true
+    }
+  ],
+
+  "configWorkspace": [
+    {
+      "key": "sciencefidelity.astro.config.enableLsp",
+      "title": "Enable Language Server",
+      "type": "enum",
+      "values": [
+        ["null", "Inherit from Global Settings"],
+        ["false", "Disable"],
+        ["true", "Enable"]
+      ],
+      "default": "null"
+    }
+  ],
 
   "commands": {
     "extensions": [
