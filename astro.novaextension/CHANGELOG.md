@@ -1,3 +1,12 @@
+## Version 0.2.1
+
+Updated syntax now includes support for JavaScript in jsx templates.
+
+## Version 0.2.0
+
+Added support for Astro LSP with IntelliSense and code completion.
+
 ## Version 0.1.0
 
-Initial release
+Rough syntax highlighting for `.astro` components.
+No support for inline Markdown and javascript in jsx.

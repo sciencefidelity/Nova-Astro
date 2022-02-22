@@ -3,7 +3,7 @@
   "name": "Astro",
   "organization": "Matt Cook",
   "description": "Language support for Astro.js.",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "categories": [
     "completions",
     "formatters",

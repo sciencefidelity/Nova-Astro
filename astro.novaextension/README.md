@@ -2,7 +2,7 @@
 
 # Astro for Nova
 
-Provides syntax highlighting, intellisence autocompletion for **[Astro](https://astro.build)** components.
+Provides syntax highlighting, IntelliSense autocompletion for **[Astro](https://astro.build)** components.
 
 Currently supports the following features:
 
