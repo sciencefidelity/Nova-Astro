@@ -2,6 +2,8 @@
 
 # Astro for Nova
 
+![](https://raw.githubusercontent.com/sciencefidelity/Nova-Astro/main/images/screenshot.png)
+
 Provides syntax highlighting, IntelliSense autocompletion for **[Astro](https://astro.build)** components.
 
 Currently supports the following features:
