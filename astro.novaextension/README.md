@@ -2,7 +2,7 @@
 
 Provides syntax highlighting, intellisence autocompletion for **[Astro](https://astro.build)** components.
 
-![](https://nova.app/images/en/dark/editor.png)
+![](https://raw.githubusercontent.co/sciencefidelity/Nova-Astro/main/main/images/banner.png)
 
 Currently supports the following features:
 
