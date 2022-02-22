@@ -1,20 +1,9 @@
 import { dependencyManagement } from "nova-extension-utils"
 
-nova.commands.register("sciencefidelity.astro.reload", reload)
-
-dependencyManagement.registerDependencyUnlockCommand(
-  "sciencefidelity.astro.forceClearLock"
-)
-
-// watch the preferences for enable analysis server
-nova.config.onDidChange("sciencefidelity.astro.config.enableLsp", async () => {
-  client ? activate() : deactivate()
-})
-
 let client: LanguageClient | null = null
 let compositeDisposable = new CompositeDisposable()
 
-async function makeFileExecutable(file: string) {
+const makeFileExecutable = async (file: string) => {
   return new Promise<void>((resolve, reject) => {
     const process = new Process("/usr/bin/env", {
       args: ["chmod", "u+x", file],
@@ -31,13 +20,14 @@ async function makeFileExecutable(file: string) {
 }
 
 
-async function reload() {
+const reload = async () => {
+  console.log("deactivating...")
   deactivate()
   console.log("reloading...")
   await asyncActivate()
 }
 
-async function asyncActivate() {
+const asyncActivate = async () => {
   try {
     await dependencyManagement.installWrappedDependencies(
       compositeDisposable,
@@ -87,9 +77,10 @@ async function asyncActivate() {
   client?.start()
 }
 
-export function activate(): void | Promise<void> {
+const activate = (): void | Promise<void> => {
   if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
     console.log("activating...")
+    compositeDisposable = new CompositeDisposable()
     return asyncActivate()
       .catch(err => {
         console.error("Failed to activate")
@@ -104,9 +95,18 @@ export function activate(): void | Promise<void> {
   }
 }
 
-export function deactivate(): void | Promise<void> {
+const deactivate = (): void | Promise<void> => {
   console.log("deactivate")
   compositeDisposable.dispose()
-  compositeDisposable = new CompositeDisposable()
   client?.stop()
 }
+
+nova.commands.register("sciencefidelity.astro.reload", reload)
+
+dependencyManagement.registerDependencyUnlockCommand(
+  "sciencefidelity.astro.forceClearLock"
+)
+
+nova.config.onDidChange("sciencefidelity.astro.config.enableLsp", () => {
+  client ? deactivate() : activate()
+})
