@@ -2,7 +2,7 @@
 
 # Astro for Nova
 
-![](https://raw.githubusercontent.com/sciencefidelity/Nova-Astro/main/images/screenshot.png)
+![](https://raw.githubusercontent.com/sciencefidelity/Nova-Astro/main/images/screenshot-2.png)
 
 Provides syntax highlighting, IntelliSense and autocompletion for **[Astro](https://astro.build)** components.
 
@@ -34,4 +34,4 @@ I'm by no means an expert with Nova extensions, if you find a problem not listed
 
 ## Credits
 
-As always credit goes to [@apexskier](https://github.com/apexskier) for making the great [TypeScript](https://github.com/apexskier/nova-typescript) extension and utils. Thanks to the Astro team of work on the [Astro Language Server and VSCode extension](https://github.com/withastro/language-tools) that has inspired this, and to Nova for their built in syntaxes that I have wholehartedly copied.
+As always credit goes to [@apexskier](https://github.com/apexskier) for making the great [TypeScript](https://github.com/apexskier/nova-typescript) extension and utils. Thanks to the Astro team for their work on the [Astro Language Server and VSCode extension](https://github.com/withastro/language-tools), and to Nova for their built in syntaxes that I have wholehartedly copied.
