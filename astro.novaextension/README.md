@@ -22,9 +22,9 @@ Support for the following is planned for future updates:
 
 ## Caveats
 
-Sometimes the language server does not start when opening a new workspace, or it doesn't update when making changes, in such cases restart the server with the Extensions menu:  `Extensions->Astro->Restart Server`.
+Sometimes the language server does not start when opening a new workspace, or it doesn't update when making changes, in such cases restart the server with the Extensions menu:  `Extensions->Astro->Restart Server`. You can disable the language server in the global extension preferences.
 
-The [Astro Language Server](https://github.com/withastro/language-tools) is young and certain things don't work as expected. It will not resolve aliases in your `tsconfig.json`, it won't understand imports of `.svelte` or `.vue` components and will show type errors for Astro specific props passed to framework.
+The [Astro Language Server](https://github.com/withastro/language-tools) is young and certain things don't work as expected. It will not resolve aliases in your `tsconfig.json`, it won't understand imports of `.svelte` or `.vue` components and will show type errors for Astro specific props passed to those frameworks.
 
 There are still some quirks with the syntax highlighting to iron out, most obviously is that top level html template tags will not grey out when commented.
 
