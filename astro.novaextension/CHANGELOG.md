@@ -1,3 +1,7 @@
+## Version 0.3.2
+
+Refactor color assistant script in Typescript
+
 ## Version 0.3.1
 
 Implememt Open Workspace Config command.

@@ -2,8 +2,8 @@
   "identifier": "sciencefidelity.astro",
   "name": "Astro",
   "organization": "Matt Cook",
-  "description": "Syntax highlighting, IntelliSense and autocompletion for Astro.",
-  "version": "0.3.1",
+  "description": "Syntax highlighting, IntelliSense and autocompletion for 🚀 Astro.",
+  "version": "0.3.2",
   "categories": [
     "completions",
     "formatters",
