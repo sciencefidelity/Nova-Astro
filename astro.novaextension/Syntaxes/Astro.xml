@@ -4,7 +4,6 @@
         <name>Astro</name>
         <type>script</type>
         <preferred-file-extension>astro</preferred-file-extension>
-        <!-- <parent>typescript</parent> -->
     </meta>
 
     <detectors>
@@ -104,11 +103,11 @@
                 </symbol>
                 <starts-with>
                     <expression>\A(-{3})\s*$</expression>
-                    <capture number="1" name="comment.block.html" />
+                    <capture number="1" name="astro.comment.block" />
                 </starts-with>
                 <ends-with>
                     <expression>(^|\G)(-{3})|\.{3}\s*$</expression>
-                    <capture number="2" name="comment.block.html" />
+                    <capture number="2" name="astro.comment.block" />
                 </ends-with>
                 <subsyntax name="typescript">
                     <cut-off>
@@ -178,7 +177,7 @@
                         </symbol>
                         <starts-with>
                             <expression>&lt;((?i:style))</expression>
-                            <capture number="1" name="html.tag.name" />
+                            <capture number="1" name="astro.tag.name" />
                         </starts-with>
                         <ends-with>
                             <expression>/?&gt;</expression>
@@ -218,7 +217,7 @@
                         </symbol>
                         <starts-with>
                             <expression>&lt;((?i:style))</expression>
-                            <capture number="1" name="html.tag.name" />
+                            <capture number="1" name="astro.tag.name" />
                         </starts-with>
                         <ends-with>
                             <expression>/?&gt;</expression>
@@ -258,7 +257,7 @@
                         </symbol>
                         <starts-with>
                             <expression>&lt;((?i:style))</expression>
-                            <capture number="1" name="html.tag.name" />
+                            <capture number="1" name="astro.tag.name" />
                         </starts-with>
                         <ends-with>
                             <expression>/?&gt;</expression>
@@ -298,7 +297,7 @@
                         </symbol>
                         <starts-with>
                             <expression>&lt;((?i:style))</expression>
-                            <capture number="1" name="html.tag.name" />
+                            <capture number="1" name="astro.tag.name" />
                         </starts-with>
                         <ends-with>
                             <expression>/?&gt;</expression>
@@ -338,7 +337,7 @@
                         </symbol>
                         <starts-with>
                             <expression>&lt;((?i:script))</expression>
-                            <capture number="1" name="html.tag.name" />
+                            <capture number="1" name="astro.tag.name" />
                         </starts-with>
                         <ends-with>
                             <expression>/?&gt;</expression>
@@ -418,7 +417,7 @@
                     <capture number="2" name="astro.tag.open.name" />
                 </starts-with>
                 <ends-with>
-                    <template>&lt;/\s*($2)\s*&gt;|/&gt;</template>
+                    <expression>&lt;/\s*($2)\s*&gt;|/&gt;</expression>
                     <capture number="0" name="astro.tag.close" />
                     <capture number="1" name="astro.tag.close.name" />
                 </ends-with>
