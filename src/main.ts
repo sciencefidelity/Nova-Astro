@@ -1,7 +1,8 @@
+import { AstroColorAssistant } from "./colors"
 import { dependencyManagement } from "nova-extension-utils"
 import { wrapCommand } from "./novaUtils"
 
-const Colors = require("Colors.js")
+const Colors = new AstroColorAssistant()
 nova.assistants.registerColorAssistant(["astro"], Colors)
 
 let client: LanguageClient | null = null
