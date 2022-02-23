@@ -1,4 +1,5 @@
 import { dependencyManagement } from "nova-extension-utils"
+import { wrapCommand } from "./novaUtils"
 
 const Colors = require("Colors.js")
 nova.assistants.registerColorAssistant(["astro"], Colors)
@@ -103,6 +104,13 @@ const deactivate = (): void | Promise<void> => {
   compositeDisposable.dispose()
   client?.stop()
 }
+
+nova.commands.register(
+  "sciencefidelity.astro.openWorkspaceConfig",
+  wrapCommand(function openWorkspaceConfig(workspace: Workspace) {
+    workspace.openConfig()
+  })
+)
 
 nova.commands.register("sciencefidelity.astro.reload", reload)
 
