@@ -1,6 +1,6 @@
 {
   "name": "nova-astro",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Astro.js language support for Nova",
   "author": "Matt Cook",
   "license": "MIT",
@@ -16,7 +16,7 @@
   "scripts": {
     "build": "rollup -c rollup.config.main.js && rm -rf astro.novaextension/node_modules",
     "watch": "onchange -i 'src/**' 'rollup.*.js' -- npm run build",
-    "clean": "rm astro.novaextension/Scripts/*",
+    "clean": "rm astro.novaextension/Scripts/main.dist.js astro.novaextension/Scripts/main.dist.js.map",
     "lint": "concurrently 'yarn:lint:*'",
     "lint:js": "eslint '**/*.{ts,js}'",
     "lint:format": "prettier --check '**/*.{ts,js,json,md,yml}'",
