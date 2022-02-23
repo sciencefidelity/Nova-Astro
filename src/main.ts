@@ -1,5 +1,8 @@
 import { dependencyManagement } from "nova-extension-utils"
 
+const Colors = require("Colors.js")
+nova.assistants.registerColorAssistant(["astro"], Colors)
+
 let client: LanguageClient | null = null
 let compositeDisposable = new CompositeDisposable()
 
