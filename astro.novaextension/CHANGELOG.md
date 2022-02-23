@@ -1,6 +1,10 @@
+## Version 0.3.3
+
+Fix typos in docs.
+
 ## Version 0.3.2
 
-Refactor color assistant script in Typescript
+Refactor color assistant script in Typescript.
 
 ## Version 0.3.1
 
