@@ -2,7 +2,7 @@
   "identifier": "sciencefidelity.astro",
   "name": "Astro",
   "organization": "Matt Cook",
-  "description": "Language support for Astro.js.",
+  "description": "Syntax highlighting, IntelliSense and autocompletion for Astro.",
   "version": "0.3.1",
   "categories": [
     "completions",
