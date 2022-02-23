@@ -8,25 +8,25 @@ Provides syntax highlighting, IntelliSense and autocompletion for **[Astro](http
 
 Currently supports the following features:
 
-- Code hover hints
-- Code completion
 - Syntax highlighting for `.astro` components
-- Code folding
+- Code hover hints and issues
+- Code completion
 - Emmet
+- Code folding
 - Color Picker in `.astro` components
 
-Support for the following is planned for a future update:
+Support for the following is planned for future updates:
 
 - Jump to definition
-- Syntax highlighting for astro syntax in Markdown
+- Syntax highlighting for astro syntax in Markdown documents
 
 ## Caveats
 
-The [Astro Language Server](https://github.com/withastro/language-tools) is still young and certain things don't work as expected. It will not resolve aliases in your `tsconfig.json`, won't understand imports of `.svelte` or `.vue` components, and will show type errors for props passed to those components. Dispite these warnings, most times your app will still compile.
+Sometimes the language server does not start when opening a new workspace, or it doesn't update when making changes, in such cases restart the server with the Extensions menu:  `Extensions->Astro->Restart Server`.
 
-Sometimes the language server does not start when opening a new workspace, or it doesn't update when making changes, in such cases restart the server with the Extensions menu. `Extensions->Astro->Restart Server` should fix these small crashes.
+The [Astro Language Server](https://github.com/withastro/language-tools) is young and certain things don't work as expected. It will not resolve aliases in your `tsconfig.json`, it won't understand imports of `.svelte` or `.vue` components and will show type errors for Astro specific props passed to framework.
 
-There are still some quirks with the syntax to iron out. The top level html template tags will not grey out when commented.
+There are still some quirks with the syntax highlighting to iron out, most obviously is that top level html template tags will not grey out when commented.
 
 ## Contributing
 

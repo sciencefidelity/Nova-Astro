@@ -1,3 +1,7 @@
+## Version 0.3.1
+
+Implememt Open Workspace Config command.
+
 ## Version 0.3.0
 
 Color picker now working in `.astro` components.
