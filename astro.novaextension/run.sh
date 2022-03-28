@@ -7,5 +7,5 @@ cd "$WORKSPACE_DIR"
 # symlinks have issues when the extension is submitted to the library, so we don't use node_modules/.bin
 
 node \
-  "$INSTALL_DIR/node_modules/@astrojs/language-server/bin/server.js" \
+  "$INSTALL_DIR/node_modules/@astrojs/language-server/bin/nodeServer.js" \
   --stdio \
