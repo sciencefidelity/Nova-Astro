@@ -27,8 +27,10 @@
   "main": "main.dist.js",
   "activationEvents": [
     "onLanguage:astro",
+    "onWorkspaceContains:astro.config.js",
+    "onWorkspaceContains:astro.config.cjs",
     "onWorkspaceContains:astro.config.mjs",
-    "onWorkspaceContains:astro.config.js"
+    "onWorkspaceContains:astro.config.ts"
   ],
   "entitlements": {
     "process": true,
