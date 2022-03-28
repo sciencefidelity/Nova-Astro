@@ -6,6 +6,10 @@ const title = "Astro"
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
+    <Hello />
+    <Goodbye>
+      <slot />
+    </Goodbye>
   </head>
   <body>
     <h1>{title}</h1>
