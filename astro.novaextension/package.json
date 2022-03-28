@@ -3,6 +3,6 @@
   "version": "0.3.3",
   "private": true,
   "dependencies": {
-    "@astrojs/language-server": "^0.8.8"
+    "@astrojs/language-server": "^0.13.2"
   }
 }
