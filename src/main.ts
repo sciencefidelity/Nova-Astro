@@ -58,25 +58,27 @@ const asyncActivate = async () => {
   const runFile = nova.path.join(nova.extension.path, "run.sh")
   await makeFileExecutable(runFile)
 
-  const serviceArgs = {
-    path: runFile,
-  }
-  const syntaxes = ["astro"]
-  const env = {
-    WORKSPACE_DIR: nova.workspace.path ?? "",
-    INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
-  }
+  // const serverOptions = {
+  //   args: "--stdio",
+  //   path: `${dependencyManagement.getDependencyDirectory()}/node_modules/@astrojs/language-server/bin/nodeServer.js`,
+  //   type: "stdio",
+  // }
+  // const syntaxes = ["astro"]
+  // const env = {
+  //   WORKSPACE_DIR: nova.workspace.path ?? "",
+  //   INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
+  // }
 
   client = new LanguageClient(
     "sciencefidelity.astro",
     "Astro Language Server",
     {
+      args: ["--stdio"],
+      path: `${dependencyManagement.getDependencyDirectory()}/node_modules/@astrojs/language-server/bin/nodeServer.js`,
       type: "stdio",
-      ...serviceArgs,
-      env
     },
     {
-      syntaxes
+      syntaxes: ["astro"]
     }
   )
   client?.start()
