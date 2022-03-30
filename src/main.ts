@@ -78,7 +78,7 @@ const asyncActivate = async () => {
       args: ["bash", "-c", `tee "${inLog}" | "${runFile}" | tee "${outLog}"`]
       // args: ["bash", "-c", `"${runFile}" | tee "${outLog}"`]
     }
-    WORKSPACE_DIR = `${nova.workspace.path}/test-workspace` ?? ""
+    WORKSPACE_DIR = nova.path.join(nova.workspace.path, "test-workspace") ?? ""
   } else {
     serviceArgs = {
       path: runFile
