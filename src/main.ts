@@ -58,40 +58,104 @@ const asyncActivate = async () => {
   const runFile = nova.path.join(nova.extension.path, "run.sh")
   await makeFileExecutable(runFile)
 
-  // const serverOptions = {
-  //   args: "--stdio",
-  //   path: `${dependencyManagement.getDependencyDirectory()}/node_modules/@astrojs/language-server/bin/nodeServer.js`,
-  //   type: "stdio",
-  // }
-  // const syntaxes = ["astro"]
-  // const env = {
-  //   WORKSPACE_DIR: nova.workspace.path ?? "",
-  //   INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
-  // }
+  let serviceArgs
+  let WORKSPACE_DIR
+  if (nova.inDevMode() && nova.workspace.path) {
+    const logDir = nova.path.join(nova.workspace.path, "logs")
+    await new Promise<void>((resolve, reject) => {
+      const p = new Process("/usr/bin/env", {
+        args: ["mkdir", "-p", logDir]
+      })
+      p.onDidExit((status) => (status === 0 ? resolve() : reject()))
+      p.start()
+    })
+    console.log("logging to", logDir)
+    // passing inLog breaks some requests for an unknown reason
+    const inLog = nova.path.join(logDir, "languageServer-in.log")
+    const outLog = nova.path.join(logDir, "languageServer-out.log")
+    serviceArgs = {
+      path: "/usr/bin/env",
+      args: ["bash", "-c", `tee "${inLog}" | "${runFile}" | tee "${outLog}"`]
+      // args: ["bash", "-c", `"${runFile}" | tee "${outLog}"`]
+    }
+    WORKSPACE_DIR = `${nova.workspace.path}/test-workspace` ?? ""
+  } else {
+    serviceArgs = {
+      path: runFile
+    }
+    WORKSPACE_DIR = nova.workspace.path ?? ""
+  }
+
+  const syntaxes = ["astro"]
+  const env = {
+    WORKSPACE_DIR,
+    INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
+  }
 
   client = new LanguageClient(
     "sciencefidelity.astro",
     "Astro Language Server",
     {
-      args: ["--stdio"],
-      path: `${dependencyManagement.getDependencyDirectory()}/node_modules/@astrojs/language-server/bin/nodeServer.js`,
       type: "stdio",
+      ...serviceArgs,
+      env
     },
     {
-      syntaxes: ["astro"]
+      syntaxes
     }
   )
-  client?.start()
+
+  let disposed = false
+
+  compositeDisposable.add(
+    client?.onDidStop((err) => {
+      if (disposed && !err) {
+        return
+      }
+      let message = "Astro Language Server stopped unexpectedly"
+      if (err) {
+        message += `:\n\n${err.toString()}`
+      } else {
+        message += "."
+      }
+      message +=
+        "\n\nPlease report this with any output in the Extension Console."
+      nova.workspace.showActionPanel(
+        message,
+        {
+          buttons: ["Restart", "Ignore"]
+        },
+        (index) => {
+          if (index == 0) {
+            nova.commands.invoke("apexskier.typescript.reload")
+          }
+        }
+      )
+    })
+  )
+
+  compositeDisposable.add({
+    dispose() {
+      disposed = true
+    }
+  })
+
+  client.start()
 }
 
-const activate = (): void | Promise<void> => {
+export function activate() {
   if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
     console.log("activating...")
-    compositeDisposable = new CompositeDisposable()
+    if (nova.inDevMode()) {
+      const notification = new NotificationRequest("activated")
+      notification.body = "Astro extension is loading"
+      nova.notifications.add(notification)
+    }
     return asyncActivate()
       .catch(err => {
         console.error("Failed to activate")
         console.error(err)
+        nova.workspace.showErrorMessage(err)
       })
       .then(() => {
         console.log("activated")
@@ -105,6 +169,7 @@ const activate = (): void | Promise<void> => {
 const deactivate = (): void | Promise<void> => {
   console.log("deactivate")
   compositeDisposable.dispose()
+  compositeDisposable = new CompositeDisposable()
   client?.stop()
 }
 

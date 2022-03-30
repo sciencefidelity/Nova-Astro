@@ -8,5 +8,6 @@ log
 .DS_Store
 .code
 *.bak
+*.bak*
 *.dist.js
 *.map
