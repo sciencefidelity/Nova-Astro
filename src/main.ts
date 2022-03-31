@@ -70,13 +70,11 @@ const asyncActivate = async () => {
       p.start()
     })
     console.log("logging to", logDir)
-    // passing inLog breaks some requests for an unknown reason
     const inLog = nova.path.join(logDir, "languageServer-in.log")
     const outLog = nova.path.join(logDir, "languageServer-out.log")
     serviceArgs = {
       path: "/usr/bin/env",
       args: ["bash", "-c", `tee "${inLog}" | "${runFile}" | tee "${outLog}"`]
-      // args: ["bash", "-c", `"${runFile}" | tee "${outLog}"`]
     }
     WORKSPACE_DIR = nova.path.join(nova.workspace.path, "test-workspace") ?? ""
   } else {
@@ -137,21 +135,19 @@ const asyncActivate = async () => {
         {
           buttons: ["Restart", "Ignore"]
         },
-        (index) => {
+        index => {
           if (index == 0) {
-            nova.commands.invoke("apexskier.typescript.reload")
+            nova.commands.invoke("sciencefidelity.astro.reload")
           }
         }
       )
     })
   )
-
   compositeDisposable.add({
     dispose() {
       disposed = true
     }
   })
-
   client.start()
 }
 
@@ -183,6 +179,7 @@ const deactivate = (): void | Promise<void> => {
   compositeDisposable.dispose()
   compositeDisposable = new CompositeDisposable()
   client?.stop()
+  client = null
 }
 
 nova.commands.register(
