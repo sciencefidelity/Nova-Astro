@@ -101,7 +101,19 @@ const asyncActivate = async () => {
       env
     },
     {
-      syntaxes
+      syntaxes,
+      initializationOptions: {
+        configuration: {
+          astro: {},
+          prettier: {},
+          emmet: {},
+          typescript: {},
+          javascript: {},
+        },
+        environment: "node",
+        dontFilterIncompleteCompletions: true,
+        isTrusted: true
+      }
     }
   )
 
