@@ -4,8 +4,10 @@ import { ClientOptions } from "./interfaces"
 import { makeFileExecutable, wrapCommand } from "./utils"
 
 const Colors = new AstroColorAssistant()
-let client: LanguageClient | null = null
 let compositeDisposable = new CompositeDisposable()
+let client: LanguageClient | null = null
+let deactivatingClient = false
+let restartingClient = false
 const runFile = nova.path.join(nova.extension.path, "run.sh")
 let WORKSPACE_DIR: string
 if (nova.inDevMode() && nova.workspace.path) {
@@ -27,6 +29,16 @@ nova.commands.register("sciencefidelity.astro.reload", restartClient)
 
 dependencyManagement.registerDependencyUnlockCommand(
   "sciencefidelity.astro.forceClearLock"
+)
+
+nova.config.onDidChange(
+  "sciencefidelity.astro.config.enableLsp", (current, _previous) => {
+    if (current) {
+      activateClient()
+    } else {
+      deactivateClient()
+    }
+  }
 )
 
 async function activateClient() {
@@ -96,18 +108,29 @@ async function activateClient() {
 }
 
 async function restartClient() {
-  console.log("deactivating...")
-  deactivateClient()
+  if (restartingClient) {
+    return
+  }
+  restartingClient = true
+  await deactivateClient()
   console.log("reloading...")
   await activateClient()
+  console.log("activated")
+  restartingClient = false
 }
 
 async function deactivateClient() {
-  console.log("deactivate")
+  if (deactivatingClient) {
+    return
+  }
+  deactivatingClient = true
+  console.log("deactivating...")
   compositeDisposable.dispose()
   compositeDisposable = new CompositeDisposable()
   client?.stop()
   client = null
+  console.log("deactivated")
+  deactivatingClient = false
 }
 
 export async function activate() {
@@ -129,25 +152,17 @@ export async function activate() {
       }
     )
   } catch (err) {
-    console.log("Failed to install")
+    console.log("failed to install")
     throw err
   }
 
   await makeFileExecutable(runFile)
 
-  nova.config.onDidChange("sciencefidelity.astro.config.enableLsp", () => {
-    if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
-      activateClient()
-    } else {
-      deactivateClient()
-    }
-  })
-
   if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
     console.log("activating...")
     return activateClient()
       .catch(err => {
-        console.error("Failed to activate")
+        console.error("failed to activate")
         console.error(err)
         nova.workspace.showErrorMessage(err)
       })
