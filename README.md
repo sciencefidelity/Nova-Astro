@@ -18,17 +18,14 @@ Support for the following is planned for future updates:
 - Jump to definition
 - Syntax highlighting for astro syntax in Markdown documents
 
-## Caveats
+## Known issues
 
-Sometimes the language server does not start when opening a new workspace, or it doesn't update when making changes, in such cases restart the server with the Extensions menu:  `Extensions->Astro->Restart Server`.
-
-The [Astro Language Server](https://github.com/withastro/language-tools) is young and certain things don't work as expected. It will not resolve aliases in your `tsconfig.json`, it won't understand imports of `.svelte` or `.vue` components and will show type errors for Astro specific props passed to those frameworks.
-
-There are still some quirks with the syntax highlighting to iron out, most obviously is that top level html template tags will not grey out when commented.
+- Code folding is not working correctly for html tags.
+- Top level html template tags will not grey out when commented.
 
 ## Contributing
 
-I'm by no means an expert with Nova extensions, if you find a problem not listed here, know a way to fix it, or think of an enhancement [please create an issue](https://github.com/sciencefidelity/Nova-Astro/issues/new/choose).
+If you find a problem not listed here, know a way to fix it, or think of an enhancement [please create an issue](https://github.com/sciencefidelity/Nova-Astro/issues/new/choose), PRs welcome!
 
 ## Credits
 
