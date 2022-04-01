@@ -1,3 +1,8 @@
+## Version 0.4.0
+
+Upgrade Astro LSP to v0.13.2.
+Fix: Enabling/Disabling LSP in config now works as expected.
+
 ## Version 0.3.3
 
 Fix typos in docs.
