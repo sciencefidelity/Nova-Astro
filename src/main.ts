@@ -1,52 +1,68 @@
 import { dependencyManagement } from "nova-extension-utils"
 import { AstroColorAssistant } from "./colors"
 import { ClientOptions } from "./interfaces"
-import { makeFileExecutable, wrapCommand } from "./utils"
+import { makeFileExecutable } from "./utils"
 
 const Colors = new AstroColorAssistant()
 let compositeDisposable = new CompositeDisposable()
 let client: LanguageClient | null = null
-let deactivatingClient = false
-let restartingClient = false
-const runFile = nova.path.join(nova.extension.path, "run.sh")
-let WORKSPACE_DIR: string
-if (nova.inDevMode() && nova.workspace.path) {
-  WORKSPACE_DIR = nova.path.join(nova.workspace.path, "test-workspace") ?? ""
-} else {
-  WORKSPACE_DIR = nova.workspace.path ?? ""
-}
 
 nova.assistants.registerColorAssistant(["astro"], Colors)
-
-nova.commands.register(
-  "sciencefidelity.astro.openWorkspaceConfig",
-  wrapCommand(function openWorkspaceConfig(workspace: Workspace) {
-    workspace.openConfig()
-  })
-)
-
 nova.commands.register("sciencefidelity.astro.reload", restartClient)
-
 dependencyManagement.registerDependencyUnlockCommand(
   "sciencefidelity.astro.forceClearLock"
 )
 
 nova.config.onDidChange(
-  "sciencefidelity.astro.config.enableLsp", (current, _previous) => {
+  "sciencefidelity.astro.config.enableLsp", async (current, _previous) => {
     if (current) {
-      activateClient()
+      await activateClient()
     } else {
-      deactivateClient()
+      await deactivateClient()
     }
   }
 )
 
+async function disposeSubscriptions() {
+  compositeDisposable.dispose()
+  compositeDisposable = new CompositeDisposable()
+}
+
+async function stopClient() {
+  client?.stop()
+}
+
 async function activateClient() {
+  try {
+    await dependencyManagement.installWrappedDependencies(
+      nova.subscriptions,
+      {
+        console: {
+          log: (...args: Array<unknown>) => {
+            console.log("dependencyManagement:", ...args)
+          },
+          info: (...args: Array<unknown>) => {
+            console.info("dependencyManagement:", ...args)
+          },
+          warn: (...args: Array<unknown>) => {
+            console.warn("dependencyManagement:", ...args)
+          }
+        }
+      }
+    )
+  } catch (err) {
+    console.log("failed to install")
+    throw err
+  }
+
+  const runFile = nova.path.join(nova.extension.path, "run.sh")
+  await makeFileExecutable(runFile)
+
   const serverOptions: ServerOptions = {
     type: "stdio",
     path: runFile,
     env: {
-      WORKSPACE_DIR,
+      WORKSPACE_DIR: nova.workspace.path ?? "",
       INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
     }
   }
@@ -104,9 +120,11 @@ async function activateClient() {
       disposed = true
     }
   })
-  client.start()
+
+  client?.start()
 }
 
+let restartingClient = false
 async function restartClient() {
   if (restartingClient) {
     return
@@ -114,63 +132,38 @@ async function restartClient() {
   restartingClient = true
   await deactivateClient()
   console.log("reloading...")
-  await activateClient()
+  await activate()
   console.log("activated")
   restartingClient = false
 }
 
+let deactivatingClient = false
 async function deactivateClient() {
   if (deactivatingClient) {
     return
   }
   deactivatingClient = true
   console.log("deactivating...")
-  compositeDisposable.dispose()
-  compositeDisposable = new CompositeDisposable()
-  client?.stop()
-  client = null
+  await disposeSubscriptions()
+  await stopClient()
   console.log("deactivated")
   deactivatingClient = false
 }
 
 export async function activate() {
-  try {
-    await dependencyManagement.installWrappedDependencies(
-      compositeDisposable,
-      {
-        console: {
-          log: (...args: Array<unknown>) => {
-            console.log("dependencyManagement:", ...args)
-          },
-          info: (...args: Array<unknown>) => {
-            console.info("dependencyManagement:", ...args)
-          },
-          warn: (...args: Array<unknown>) => {
-            console.warn("dependencyManagement:", ...args)
-          }
-        }
-      }
-    )
-  } catch (err) {
-    console.log("failed to install")
-    throw err
-  }
-
-  await makeFileExecutable(runFile)
 
   if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
     console.log("activating...")
     return activateClient()
       .catch(err => {
-        console.error("failed to activate")
-        console.error(err)
-        nova.workspace.showErrorMessage(err)
+        console.error("Failed to activate");
+        console.error(err);
+        nova.workspace.showErrorMessage(err);
       })
       .then(() => {
         console.log("activated")
       })
   } else {
-    console.log("LSP disabled...")
-    return deactivateClient()
+    console.log("LSP disabled")
   }
 }
