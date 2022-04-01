@@ -1,8 +1,8 @@
-![](https://raw.githubusercontent.com/sciencefidelity/Nova-Astro/main/images/banner.png)
+![](https://cdn.sanity.io/images/binfz6bl/production/c0fefa2849a44424bf8a36edb9095cea7cc09292-1280x279.png)
 
 # Astro for Nova
 
-![](https://raw.githubusercontent.com/sciencefidelity/Nova-Astro/main/images/screenshot-2.png)
+![](https://cdn.sanity.io/images/binfz6bl/production/7822df572ea696faccd3ff56e1d8c37cd4731da1-1444x874.png)
 
 Provides syntax highlighting, IntelliSense and autocompletion for **[Astro](https://astro.build)** components.
 
@@ -17,8 +17,9 @@ Currently supports the following features:
 
 Support for the following is planned for future updates:
 
-- Jump to definition
 - Debugging
+- LSP config
+- Jump to definition
 
 ## Known issues
 
