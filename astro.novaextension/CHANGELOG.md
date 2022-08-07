@@ -1,3 +1,7 @@
+## Version 0.4.2
+
+- Upgrade Astro LSP to v0.20.3.
+
 ## Version 0.4.1
 
 - Upgrade Astro LSP to v0.13.4.
