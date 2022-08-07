@@ -1,62 +1,60 @@
-import { dependencyManagement } from "nova-extension-utils"
-import { AstroColorAssistant } from "./colors"
-import { ClientOptions } from "./interfaces"
-import { makeFileExecutable } from "./utils"
+import { dependencyManagement } from "nova-extension-utils";
+import { AstroColorAssistant } from "./colors";
+import { ClientOptions } from "./interfaces";
+import { makeFileExecutable } from "./utils";
 
-const Colors = new AstroColorAssistant()
-let compositeDisposable = new CompositeDisposable()
-let client: LanguageClient | null = null
+const Colors = new AstroColorAssistant();
+let compositeDisposable = new CompositeDisposable();
+let client: LanguageClient | null = null;
 
-nova.assistants.registerColorAssistant(["astro"], Colors)
-nova.commands.register("sciencefidelity.astro.reload", restartClient)
+nova.assistants.registerColorAssistant(["astro"], Colors);
+nova.commands.register("sciencefidelity.astro.reload", restartClient);
 dependencyManagement.registerDependencyUnlockCommand(
   "sciencefidelity.astro.forceClearLock"
-)
+);
 
 nova.config.onDidChange(
-  "sciencefidelity.astro.config.enableLsp", async (current, _previous) => {
+  "sciencefidelity.astro.config.enableLsp",
+  async (current, _previous) => {
     if (current) {
-      await activateClient()
+      await activateClient();
     } else {
-      await deactivateClient()
+      await deactivateClient();
     }
   }
-)
+);
 
 async function disposeSubscriptions() {
-  compositeDisposable.dispose()
-  compositeDisposable = new CompositeDisposable()
+  compositeDisposable.dispose();
+  compositeDisposable = new CompositeDisposable();
 }
 
 async function stopClient() {
-  client?.stop()
+  client?.stop();
 }
 
 async function activateClient() {
   try {
-    await dependencyManagement.installWrappedDependencies(
-      nova.subscriptions,
-      {
-        console: {
-          log: (...args: Array<unknown>) => {
-            console.log("dependencyManagement:", ...args)
-          },
-          info: (...args: Array<unknown>) => {
-            console.info("dependencyManagement:", ...args)
-          },
-          warn: (...args: Array<unknown>) => {
-            console.warn("dependencyManagement:", ...args)
-          }
-        }
-      }
-    )
+    await dependencyManagement.installWrappedDependencies(nova.subscriptions, {
+      console: {
+        log: (...args: Array<unknown>) => {
+          console.log("dependencyManagement:", ...args);
+        },
+        info: (...args: Array<unknown>) => {
+          console.info("dependencyManagement:", ...args);
+        },
+        warn: (...args: Array<unknown>) => {
+          console.warn("dependencyManagement:", ...args);
+        },
+      },
+    });
   } catch (err) {
-    console.log("failed to install")
-    throw err
+    console.log("failed to install");
+    throw err;
   }
 
-  const runFile = nova.path.join(nova.extension.path, "run.sh")
-  await makeFileExecutable(runFile)
+  const runFile = nova.path.join(nova.extension.path, "run.sh");
+  await makeFileExecutable(runFile);
 
   const serverOptions: ServerOptions = {
     type: "stdio",
@@ -64,8 +62,8 @@ async function activateClient() {
     env: {
       WORKSPACE_DIR: nova.workspace.path ?? "",
       INSTALL_DIR: dependencyManagement.getDependencyDirectory(),
-    }
-  }
+    },
+  };
   const clientOptions: ClientOptions = {
     syntaxes: ["astro"],
     initializationOptions: {
@@ -78,92 +76,91 @@ async function activateClient() {
       },
       environment: "node",
       dontFilterIncompleteCompletions: true,
-      isTrusted: true
-    }
-  }
+      isTrusted: true,
+    },
+  };
   client = new LanguageClient(
     "sciencefidelity.astro",
     "Astro Language Server",
     serverOptions,
     clientOptions
-  )
+  );
 
-  let disposed = false
+  let disposed = false;
   compositeDisposable.add(
-    client?.onDidStop(err => {
+    client?.onDidStop((err) => {
       if (disposed && !err) {
-        return
+        return;
       }
-      let message = "Astro Language Server stopped unexpectedly"
+      let message = "Astro Language Server stopped unexpectedly";
       if (err) {
-        message += `:\n\n${err.toString()}`
+        message += `:\n\n${err.toString()}`;
       } else {
-        message += "."
+        message += ".";
       }
       message +=
-        "\n\nPlease report this with any output in the Extension Console."
+        "\n\nPlease report this with any output in the Extension Console.";
       nova.workspace.showActionPanel(
         message,
         {
-          buttons: ["Restart", "Ignore"]
+          buttons: ["Restart", "Ignore"],
         },
-        index => {
+        (index) => {
           if (index == 0) {
-            nova.commands.invoke("sciencefidelity.astro.reload")
+            nova.commands.invoke("sciencefidelity.astro.reload");
           }
         }
-      )
+      );
     })
-  )
+  );
   compositeDisposable.add({
     dispose() {
-      disposed = true
-    }
-  })
+      disposed = true;
+    },
+  });
 
-  client?.start()
+  client?.start();
 }
 
-let restartingClient = false
+let restartingClient = false;
 async function restartClient() {
   if (restartingClient) {
-    return
+    return;
   }
-  restartingClient = true
-  await deactivateClient()
-  console.log("reloading...")
-  await activate()
-  console.log("activated")
-  restartingClient = false
+  restartingClient = true;
+  await deactivateClient();
+  console.log("reloading...");
+  await activate();
+  console.log("activated");
+  restartingClient = false;
 }
 
-let deactivatingClient = false
+let deactivatingClient = false;
 async function deactivateClient() {
   if (deactivatingClient) {
-    return
+    return;
   }
-  deactivatingClient = true
-  console.log("deactivating...")
-  await disposeSubscriptions()
-  await stopClient()
-  console.log("deactivated")
-  deactivatingClient = false
+  deactivatingClient = true;
+  console.log("deactivating...");
+  await disposeSubscriptions();
+  await stopClient();
+  console.log("deactivated");
+  deactivatingClient = false;
 }
 
 export async function activate() {
-
   if (nova.config.get("sciencefidelity.astro.config.enableLsp", "boolean")) {
-    console.log("activating...")
+    console.log("activating...");
     return activateClient()
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to activate");
         console.error(err);
         nova.workspace.showErrorMessage(err);
       })
       .then(() => {
-        console.log("activated")
-      })
+        console.log("activated");
+      });
   } else {
-    console.log("LSP disabled")
+    console.log("LSP disabled");
   }
 }

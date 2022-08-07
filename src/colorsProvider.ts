@@ -1,5 +1,5 @@
 interface NamedColorStrings {
-  [key: string]: string
+  [key: string]: string;
 }
 
 export const cssNamedColors = {
@@ -148,5 +148,5 @@ export const cssNamedColors = {
   wheat: "f4ddb2",
   whitesmoke: "f4f4f4",
   yellowgreen: "99cc33",
-  rebeccapurple: "663399"
-} as NamedColorStrings
+  rebeccapurple: "663399",
+} as NamedColorStrings;

@@ -4,12 +4,7 @@
   "organization": "Matt Cook",
   "description": "Syntax highlighting, IntelliSense, autocompletion for 🚀 Astro.",
   "version": "0.4.1",
-  "categories": [
-    "completions",
-    "formatters",
-    "issues",
-    "languages"
-  ],
+  "categories": ["completions", "formatters", "issues", "languages"],
   "license": "MIT",
   "repository": "https://github.com/sciencefidelity/Nova-Astro",
   "bugs": "https://github.com/sciencefidelity/Nova-Astro/issues",

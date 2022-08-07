@@ -16,10 +16,6 @@
   },
   "plugins": ["@typescript-eslint", "nova"],
   "rules": {
-    "indent": ["error", 2],
-    "linebreak-style": ["error", "unix"],
-    "quotes": ["error", "double"],
-    "semi": ["error", "never"],
     "no-unused-vars": [
       "warn",
       { "varsIgnorePattern": "[iI]gnored", "argsIgnorePattern": "^_" }
